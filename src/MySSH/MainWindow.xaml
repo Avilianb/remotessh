@@ -427,9 +427,9 @@
                                             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentKeyOperation.PrivateKeyPath}" TextWrapping="Wrap"/>
                                             <TextBlock Grid.Row="3" Text="脚本 Release"/>
                                             <TextBlock Grid.Row="3" Grid.Column="1">
-                                                <Run Text="{Binding ScriptReleaseTag}"/>
+                                                <Run Text="{Binding ScriptReleaseTag, Mode=OneWay}"/>
                                                 <Run Text=" / "/>
-                                                <Run Text="{Binding ScriptDeliveryMode}"/>
+                                                <Run Text="{Binding ScriptDeliveryMode, Mode=OneWay}"/>
                                             </TextBlock>
                                         </Grid>
                                     </Expander>
