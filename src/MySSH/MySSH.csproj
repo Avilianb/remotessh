@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <AssemblyName>MySSH</AssemblyName>
+    <RootNamespace>MySSH</RootNamespace>
+    <Version>0.1.0</Version>
+    <AssemblyTitle>My SSH</AssemblyTitle>
+    <Product>My SSH</Product>
+    <Company>My SSH</Company>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\scripts\myssh-bootstrap.sh" LogicalName="scripts.myssh-bootstrap.sh" />
+    <EmbeddedResource Include="..\..\scripts\myssh-cleanup.sh" LogicalName="scripts.myssh-cleanup.sh" />
+    <EmbeddedResource Include="..\..\scripts\myssh-disable-password.sh" LogicalName="scripts.myssh-disable-password.sh" />
+  </ItemGroup>
+</Project>
