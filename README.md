@@ -11,7 +11,7 @@ My SSH is a Windows native server security tool built with .NET 10 and WPF.
 - Host key fingerprint confirmation before first trusted connection.
 - Key takeover and rotation workbench:
   - Generates ed25519 keys locally.
-  - Produces a bootstrap command from embedded static scripts in the current development build.
+  - Produces a fixed GitHub Release/tag bootstrap command.
   - Probes the temporary SSH port.
   - Verifies temporary and official key login before cleanup.
   - Writes a My SSH managed block into the local SSH config after verification.
@@ -29,8 +29,11 @@ The release artifacts are written to `dist\MySSH.exe` and `dist\MySSH.exe.sha256
 
 ## Script release
 
-The current build embeds the files in `scripts\` into the EXE and generates
-base64-backed `bash` commands, so the first-time takeover path does not depend
-on placeholder GitHub URLs. Before a public release, the same script files can be
-published to a fixed GitHub Release/tag and the command builder can be switched
-back to URL download mode.
+Server scripts are published to:
+
+```text
+https://github.com/Avilianb/remotessh/releases/tag/v0.1.0
+```
+
+The generated takeover command downloads the fixed tag assets instead of `main`
+or `latest`.

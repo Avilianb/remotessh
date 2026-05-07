@@ -14,10 +14,4 @@
     <Company>My SSH</Company>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\scripts\myssh-bootstrap.sh" LogicalName="scripts.myssh-bootstrap.sh" />
-    <EmbeddedResource Include="..\..\scripts\myssh-cleanup.sh" LogicalName="scripts.myssh-cleanup.sh" />
-    <EmbeddedResource Include="..\..\scripts\myssh-disable-password.sh" LogicalName="scripts.myssh-disable-password.sh" />
-  </ItemGroup>
 </Project>

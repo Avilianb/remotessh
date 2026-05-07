@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Reflection;
 using System.Text;
 using MySSH.Models;
 
@@ -8,10 +7,11 @@ namespace MySSH.Services;
 public sealed class KeyManagementService
 {
     public const string ScriptReleaseTag = "v0.1.0";
-    public const string ScriptDeliveryMode = "embedded";
-    private const string BootstrapResourceName = "scripts.myssh-bootstrap.sh";
-    private const string CleanupResourceName = "scripts.myssh-cleanup.sh";
-    private const string DisablePasswordResourceName = "scripts.myssh-disable-password.sh";
+    public const string ScriptDeliveryMode = "github-release";
+    public const string ScriptReleaseBaseUrl = "https://github.com/Avilianb/remotessh/releases/download/v0.1.0";
+    public const string BootstrapScriptUrl = ScriptReleaseBaseUrl + "/myssh-bootstrap.sh";
+    public const string CleanupScriptUrl = ScriptReleaseBaseUrl + "/myssh-cleanup.sh";
+    public const string DisablePasswordScriptUrl = ScriptReleaseBaseUrl + "/myssh-disable-password.sh";
 
     private readonly OpenSshTools _tools;
     private readonly ProcessRunner _runner;
@@ -79,8 +79,8 @@ public sealed class KeyManagementService
 
     public string BuildCleanupCommand(KeyOperation operation)
     {
-        return BuildEmbeddedScriptCommand(
-            CleanupResourceName,
+        return BuildReleaseScriptCommand(
+            CleanupScriptUrl,
             new Dictionary<string, string>
             {
                 ["MYSSH_TOKEN"] = operation.Token
@@ -89,8 +89,8 @@ public sealed class KeyManagementService
 
     public string BuildDisablePasswordCommand(KeyOperation operation)
     {
-        return BuildEmbeddedScriptCommand(
-            DisablePasswordResourceName,
+        return BuildReleaseScriptCommand(
+            DisablePasswordScriptUrl,
             new Dictionary<string, string>
             {
                 ["MYSSH_TOKEN"] = operation.Token
@@ -100,8 +100,8 @@ public sealed class KeyManagementService
     private static string BuildBootstrapCommand(string publicKey, string token, int tempPort)
     {
         var publicKeyB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(publicKey));
-        return BuildEmbeddedScriptCommand(
-            BootstrapResourceName,
+        return BuildReleaseScriptCommand(
+            BootstrapScriptUrl,
             new Dictionary<string, string>
             {
                 ["MYSSH_PUBLIC_KEY_B64"] = publicKeyB64,
@@ -110,25 +110,12 @@ public sealed class KeyManagementService
             });
     }
 
-    private static string BuildEmbeddedScriptCommand(string resourceName, IReadOnlyDictionary<string, string> environment)
+    private static string BuildReleaseScriptCommand(string scriptUrl, IReadOnlyDictionary<string, string> environment)
     {
         var env = string.Join(" ", environment.Select(item => $"{item.Key}='{EscapeShell(item.Value)}'"));
-        var script = LoadEmbeddedScript(resourceName).Replace("\r\n", "\n", StringComparison.Ordinal);
-        var scriptB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(script));
-        var pipeScript = $"printf '%s' '{scriptB64}' | base64 -d | ";
-
         return $"export {env}; " +
-               $"if [ \"$(id -u)\" -eq 0 ]; then {pipeScript}bash; " +
-               $"else {pipeScript}sudo -E bash; fi";
-    }
-
-    private static string LoadEmbeddedScript(string resourceName)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Embedded script resource '{resourceName}' was not found.");
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        return reader.ReadToEnd();
+               $"if [ \"$(id -u)\" -eq 0 ]; then curl -fsSL '{scriptUrl}' | bash; " +
+               $"else curl -fsSL '{scriptUrl}' | sudo -E bash; fi";
     }
 
     private static string CreateToken()

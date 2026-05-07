@@ -6,7 +6,7 @@ namespace MySSH.Services;
 public sealed class UpdateCheckService
 {
     private const string AppReleaseUrl = "";
-    private const string ScriptReleaseUrl = "";
+    private const string ScriptReleaseUrl = "https://github.com/Avilianb/remotessh/releases/tag/v0.1.0";
 
     public string CurrentAppVersion =>
         Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
@@ -25,11 +25,6 @@ public sealed class UpdateCheckService
 
     public async Task<string> CheckScriptAsync(CancellationToken cancellationToken = default)
     {
-        if (KeyManagementService.ScriptDeliveryMode.Equals("embedded", StringComparison.OrdinalIgnoreCase))
-        {
-            return $"Current script version: {KeyManagementService.ScriptReleaseTag}. Delivery mode: embedded static scripts.";
-        }
-
         if (!TryCreateUri(ScriptReleaseUrl, out var releaseUri))
         {
             return $"Configured script release: {KeyManagementService.ScriptReleaseTag}. No script release URL is configured yet.";
